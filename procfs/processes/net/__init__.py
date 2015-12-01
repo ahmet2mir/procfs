@@ -1,5 +1,6 @@
 """/proc/<pid>/net handlers"""
 
+import os
 from procfs.core import ProcessFile, Dict
 
 
@@ -187,7 +188,7 @@ class unix(_TcpUdpBase):
 
     def _parse(self, data):
         lines = data.splitlines()
-        header = lines.pop(0).split()
+        header = lines.pop(0).lower().split()
         header.pop(0)  # skip "Num"
         result = {}
         i = 0
