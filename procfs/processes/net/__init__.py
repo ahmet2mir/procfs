@@ -168,6 +168,46 @@ class udp(_TcpUdpBase):
         return result
 
 
+class unix(_TcpUdpBase):
+    """/proc/<pid>/net/unix
+    """
+
+    # From Linux kernel source: include/net/tcp_states.h
+    __unix_states = {'01': 'ESTABLISHED',
+                    '02': 'SYN_SENT',
+                    '03': 'SYN_RECV',
+                    '04': 'FIN_WAIT1',
+                    '05': 'FIN_WAIT2',
+                    '06': 'TIME_WAIT',
+                    '07': 'CLOSE',
+                    '08': 'CLOSE_WAIT',
+                    '09': 'LAST_ACK',
+                    '0A': 'LISTEN',
+                    '0B': 'CLOSING'}
+
+    def _parse(self, data):
+        lines = data.splitlines()
+        header = lines.pop(0).split()
+        header.pop(0)  # skip "Num"
+        result = {}
+        i = 0
+        for line in lines:
+            parts = line.split()
+            path = ""
+            (num, refcount, protocol, flags, type, st, inode) = parts[:7]
+            if len(parts) > 7:
+                path = parts[7]
+            inode = int(inode)
+            num = num.split(':')[0]
+            if os.getuid() != 0:
+                num = "nonrootuser{0}".format(i)
+                i += 1
+            st = self.__unix_states[st]
+            result[num] = Dict(zip(header, ((refcount, protocol, flags, type,
+                                             st, inode, path))))
+        return result
+
+
 class sockstat(ProcessFile):
     """/proc/<pid>/net/sockstat
     """

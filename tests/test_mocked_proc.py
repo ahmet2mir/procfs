@@ -196,6 +196,10 @@ def test_first_process_net_udp(first):
     assert first.net.udp.keys()
 
 
+def test_first_process_net_unix(first):
+    assert first.net.unix.keys()
+
+
 def test_first_process_net_sockstat(first):
     assert first.net.sockstat['TCP']['alloc'] >= 0
 

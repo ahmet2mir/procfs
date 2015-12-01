@@ -40,6 +40,9 @@ def test_proc_self_net_tcp(proc):
 def test_proc_self_net_udp(proc):
     assert proc.self.net.udp.keys()
 
+def test_proc_self_net_unix(proc):
+    assert proc.self.net.unix.keys()
+
 def test_proc_self_net_sockstat(proc):
     assert proc.self.net.sockstat['TCP']['alloc'] >= 0
 
